@@ -33,17 +33,6 @@ def create_TrainingTesting_subsets(featureMatrix, outputVector, trainingProporti
     
     return trainingFeatureMatrix,trainingOutputVector,testingFeatureMatrix,testingOutputVector
 
-#Got tired and let chat gpt write this function for me
-def custom_one_hot_encode(vector):
-    
-    unique_values = np.unique(vector)
-    num_values = len(unique_values)
-    identity_matrix = np.eye(num_values)
-    encoding_dict = {value: column for value, column in zip(unique_values, identity_matrix)}
-    one_hot_encoded = np.array([encoding_dict[value] for value in vector])
-
-    return one_hot_encoded
-
 #Creates onehot array from ranges, for lists of numbers
 def create_2d_array(original_list, ranges):
     result_2d_array = []
