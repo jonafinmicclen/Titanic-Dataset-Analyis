@@ -52,8 +52,15 @@ if ANALYSE_MODE:
 
 if REGRESSION_MODE:
 
+    #Normalise continuous data
+    titanicCSV['Age']= titanicCSV['Age']/titanicCSV['Age'].max()
+    titanicCSV['Fare']= titanicCSV['Fare']/titanicCSV['Fare'].max()
+
+    #Create new column for has family based on parch and sibsp
+    titanicCSV['HasFamily']= (titanicCSV['Parch'] != 0) | (titanicCSV['SibSp'] != 0)
+
     #Create matrix of features/input only then add a all ones column for the bias weight, b0
-    featureMatrix = np.matrix(titanicCSV.drop(["Survived", 'PassengerId'], axis=1).values).astype(float)
+    featureMatrix = np.matrix(titanicCSV.drop(["Survived", 'PassengerId', 'Parch', 'SibSp'], axis=1).values).astype(float)
     featureMatrix = np.c_[featureMatrix, np.ones((featureMatrix.shape[0], 1))]
     #Create vector of actual outcomes
     outputVector = np.matrix(titanicCSV["Survived"].values).astype(float).T
@@ -63,7 +70,7 @@ if REGRESSION_MODE:
     #Create train and test model
     model = lr.LogisticModel()
     model.fit(trainingFeatureMatrix, trainingOutputVector, 0.001, 0.0000001, 100000)
-    print(model.test(testingFeatureMatrix, testingOutputVector,0))
+    print(model.test(testingFeatureMatrix, testingOutputVector,0.0))
     print(model.report_model_status())
 
     #Write predictions from model to excel file and add predictions to the dataframe
