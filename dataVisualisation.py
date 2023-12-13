@@ -7,8 +7,8 @@ import LogisticRegression as lr
 import seaborn as sns
 
 #To disable sections of code
-ANALYSE_MODE = True
-REGRESSION_MODE = False
+ANALYSE_MODE = False
+REGRESSION_MODE = True
 
 #Load csv into a pandas dataframe
 titanic_dataset = pd.read_csv('./Titanic.csv')
@@ -56,9 +56,8 @@ if REGRESSION_MODE:
     #Create new column for has family based on parch and sibsp
     titanic_dataset['HasFamily']= (titanic_dataset['Parch'] != 0) | (titanic_dataset['SibSp'] != 0)
 
-    #Create matrix of features/input only then add a all ones column for the bias weight, b0
+    #Create matrix of features
     featureMatrix = np.matrix(titanic_dataset.drop(["Survived", 'PassengerId', 'Parch', 'SibSp'], axis=1).values).astype(float)
-    featureMatrix = np.c_[featureMatrix, np.ones((featureMatrix.shape[0], 1))]
     #Create vector of actual outcomes
     outputVector = np.matrix(titanic_dataset["Survived"].values).astype(float).T
     #Create training, testing subsets
@@ -66,7 +65,7 @@ if REGRESSION_MODE:
 
     #Create train and test model
     model = lr.LogisticModel()
-    model.fit(trainingFeatureMatrix, trainingOutputVector, 0.001, 0.0000001, 100000)
+    model.fit(trainingFeatureMatrix, trainingOutputVector, 0.001, 0.0000001, 100000, bias=True)
     print(model.test(testingFeatureMatrix, testingOutputVector,0.0))
     print(model.report_model_status())
 

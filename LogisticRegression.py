@@ -29,7 +29,12 @@ class LogisticModel:
     def report_model_status(self):
         return f'{self.convergency_status}\nModel contains {self.number_of_features} features.\nCurrent weights for model are {self.weights}.\nAverage gradient dLdw is {self.average_gradients}.'
     
-    def fit(self, featureMatrix, outputVector, learningRate, accuracyGoal, maxIterations):
+    def fit(self, featureMatrix, outputVector, learningRate, accuracyGoal, maxIterations, bias=False):
+        
+        #Add bias feature
+        self.bias = bias
+        if bias == True:
+            featureMatrix = np.c_[featureMatrix, np.ones((featureMatrix.shape[0], 1))]
         
         #Check that number of features attribute is not yet created
         if hasattr(self, 'number_of_features'):
@@ -83,4 +88,6 @@ class LogisticModel:
             iterations += 1
     
     def predict(self,featureMatrix):
+        if self.bias == True:
+            featureMatrix = np.c_[featureMatrix, np.ones((featureMatrix.shape[0], 1))]
         return sigmoid(featureMatrix*self.weights.T)
