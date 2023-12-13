@@ -4,6 +4,7 @@ import utilities
 import matplotlib.pyplot as plt
 from phik import phik_matrix
 import LogisticRegression as lr
+import seaborn as sns
 
 #To disable sections of code
 ANALYSE_MODE = True
@@ -38,14 +39,13 @@ if ANALYSE_MODE:
     #Create new seperate dataframes of only Survived and Non Survived passengers
     titanic_dataset_SURVIVED_True = titanic_dataset[titanic_dataset['Survived']==1]
     titanic_dataset_SURVIVED_False = titanic_dataset[titanic_dataset['Survived']==0]
-    #Plot the frequencys of the survivors divided by frequencys of all passengers to remove bias from the initial distribution of ages
-    num_of_bins = 50
-    ageCountsTotal, binEdge = np.histogram(titanic_dataset['Age'], bins = num_of_bins)
-    binWidth = np.diff(binEdge)
-    ageCountsSurvived, _ = np.histogram(titanic_dataset_SURVIVED_True['Age'], bins = binEdge)
-    plt.bar(np.linspace(binEdge[0],binEdge[-2], num_of_bins)+binWidth/2, ageCountsSurvived/ageCountsTotal, width=binWidth)
-    plt.title('Age')
+    
+    sns.kdeplot(data=titanic_dataset, x='Age', fill=True)
+    sns.kdeplot(data=titanic_dataset_SURVIVED_True, x='Age', fill=True)
+    sns.kdeplot(data=titanic_dataset_SURVIVED_False, x='Age', fill=True)
     plt.show()
+    
+    
 
 if REGRESSION_MODE:
 
