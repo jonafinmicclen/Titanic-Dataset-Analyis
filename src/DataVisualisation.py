@@ -5,12 +5,17 @@ import matplotlib.pyplot as plt
 from phik import phik_matrix
 import LogisticRegression as lr
 import seaborn as sns
+from scipy.stats import pointbiserialr
 
-ANALYSE_MODE = False
-REGRESSION_MODE = True
+ANALYSE_MODE = True #Do not set both true
+REGRESSION_MODE = False
 
 #Load csv into a pandas dataframe
 titanic_dataset = pd.read_csv('./data/Titanic.csv')
+
+if ANALYSE_MODE:
+    #Initial look into data
+    print(titanic_dataset.describe(include='all'))
 
 #Remove unwanted columns
 titanic_dataset = titanic_dataset.drop(["Cabin", "Name", "Ticket"], axis=1)
@@ -26,15 +31,16 @@ titanic_dataset = pd.get_dummies(titanic_dataset, columns=['Embarked'])
 #Put analytical functions seperate so will not have to run every time
 if ANALYSE_MODE:
 
-    #Checking data is correctly loaded
-    print(titanic_dataset)
-
-    #Initial analyis of data using built in describe function
-    print(titanic_dataset.describe(include='all'))
-
-    #Show phik matrix of just survived excluding 
+    #Show phik matrix of just survived excluding non categorical data
     print(phik_matrix(titanic_dataset.drop(['PassengerId', 'Age', 'SibSp', 'Parch', 'Fare'], axis=1))['Survived'].drop('Survived'))
-    
+
+    #Corelations of numerical data
+    print(titanic_dataset[['Age', 'SibSp', 'Parch', 'Fare']].corr())
+
+    #Create new column has family if either parch or sibsp is not 0 and test the corelation with point biserial
+    titanic_dataset['HasFamily']= (titanic_dataset['Parch'] != 0) | (titanic_dataset['SibSp'] != 0)
+    print('Corelation of HasFamily and Survived ', pointbiserialr(titanic_dataset['HasFamily'], titanic_dataset['Survived']))
+
     #Create new seperate dataframes of only Survived and Non Survived passengers
     titanic_dataset_SURVIVED_True = titanic_dataset[titanic_dataset['Survived']==1]
     titanic_dataset_SURVIVED_False = titanic_dataset[titanic_dataset['Survived']==0]
@@ -51,9 +57,7 @@ if ANALYSE_MODE:
     sns.kdeplot(data=titanic_dataset, x='Fare', fill=False, color='blue')
     sns.kdeplot(data=titanic_dataset_SURVIVED_False, x='Fare', fill=False, color='red')
     plt.show()
-
-    #SIBSP AND PARCH LEFT
-
+    
 
 if REGRESSION_MODE:
 
