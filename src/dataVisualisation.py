@@ -6,11 +6,11 @@ from phik import phik_matrix
 import LogisticRegression as lr
 import seaborn as sns
 
-ANALYSE_MODE = False
-REGRESSION_MODE = True
+ANALYSE_MODE = True
+REGRESSION_MODE = False
 
 #Load csv into a pandas dataframe
-titanic_dataset = pd.read_csv('../data/Titanic.csv')
+titanic_dataset = pd.read_csv('./data/Titanic.csv')
 
 #Remove unwanted columns
 titanic_dataset = titanic_dataset.drop(["Cabin", "Name", "Ticket"], axis=1)
@@ -52,10 +52,7 @@ if ANALYSE_MODE:
     sns.kdeplot(data=titanic_dataset_SURVIVED_False, x='Fare', fill=False, color='red')
     plt.show()
 
-    #SIBSP AND PARCH
-    # Create a boxplot
-    titanic_dataset.boxplot(by='Category', column='Values', grid=False)
-    plt.show()
+    #SIBSP AND PARCH LEFT
 
 
 if REGRESSION_MODE:
