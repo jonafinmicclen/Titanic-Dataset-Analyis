@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
-import utilities
+import Utilities
 import matplotlib.pyplot as plt
 from phik import phik_matrix
 import LogisticRegression as lr
 import seaborn as sns
 
-ANALYSE_MODE = True
-REGRESSION_MODE = False
+ANALYSE_MODE = False
+REGRESSION_MODE = True
 
 #Load csv into a pandas dataframe
 titanic_dataset = pd.read_csv('./data/Titanic.csv')
@@ -77,7 +77,7 @@ if REGRESSION_MODE:
     #Create vector of actual outcomes
     outputVector = np.matrix(titanic_dataset["Survived"].values).astype(float).T
     #Create training, testing subsets
-    trainingFeatureMatrix,trainingOutputVector,testingFeatureMatrix,testingOutputVector = utilities.create_TrainingTesting_subsets(featureMatrix,outputVector,0.95)
+    trainingFeatureMatrix,trainingOutputVector,testingFeatureMatrix,testingOutputVector = Utilities.create_TrainingTesting_subsets(featureMatrix,outputVector,0.95)
 
     #Create train and test model
     model = lr.LogisticModel()
