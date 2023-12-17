@@ -32,12 +32,3 @@ def create_TrainingTesting_subsets(featureMatrix, outputVector, trainingProporti
     testingOutputVector = np.matrix(testingOutputVector)
     
     return trainingFeatureMatrix,trainingOutputVector,testingFeatureMatrix,testingOutputVector
-
-#Creates onehot array from ranges, for lists of numbers
-def create_2d_array(original_list, ranges):
-    result_2d_array = []
-    for value in original_list:
-        row = [1 if range[0] <= value <= range[1] else 0 for range in ranges]
-        result_2d_array.append(row)
-
-    return np.array(result_2d_array)
