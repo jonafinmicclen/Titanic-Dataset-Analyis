@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 from phik import phik_matrix
 import LogisticRegression as lr
 import seaborn as sns
+from scipy.stats import pointbiserialr
 
-#To disable sections of code
 ANALYSE_MODE = False
 REGRESSION_MODE = True
 
@@ -27,37 +27,57 @@ titanic_dataset = pd.get_dummies(titanic_dataset, columns=['Embarked'])
 #Put analytical functions seperate so will not have to run every time
 if ANALYSE_MODE:
 
-    #Show data has correctly loaded setup
+    #Checking data is correctly loaded
     print(titanic_dataset)
 
     #Initial analyis of data using built in describe function
     print(titanic_dataset.describe(include='all'))
 
-    #Show corelation values in relation to all variables and survived
-    print(phik_matrix(titanic_dataset, interval_cols=['PassengerId', 'Age', 'SibSp', 'Fare'])['Survived'])
+    #Show phik matrix of just survived excluding 
+    print(phik_matrix(titanic_dataset.drop(['PassengerId', 'Age', 'SibSp', 'Parch', 'Fare'], axis=1))['Survived'].drop('Survived'))
     
     #Create new seperate dataframes of only Survived and Non Survived passengers
     titanic_dataset_SURVIVED_True = titanic_dataset[titanic_dataset['Survived']==1]
     titanic_dataset_SURVIVED_False = titanic_dataset[titanic_dataset['Survived']==0]
     
-    sns.kdeplot(data=titanic_dataset, x='Age', fill=True)
-    sns.kdeplot(data=titanic_dataset_SURVIVED_True, x='Age', fill=True)
-    sns.kdeplot(data=titanic_dataset_SURVIVED_False, x='Age', fill=True)
+    #KDE plots of Age, PassengerID, and Fare
+    sns.kdeplot(data=titanic_dataset, x='Age', fill=False, color='blue')
+    sns.kdeplot(data=titanic_dataset_SURVIVED_True, x='Age', fill=False, color='green')
     plt.show()
-    
-    
+
+    sns.kdeplot(data=titanic_dataset, x='PassengerId', fill=False, color='blue')
+    sns.kdeplot(data=titanic_dataset_SURVIVED_True, x='PassengerId', fill=False, color='green')
+    plt.show()
+
+    sns.kdeplot(data=titanic_dataset, x='Fare', fill=False, color='blue')
+    sns.kdeplot(data=titanic_dataset_SURVIVED_False, x='Fare', fill=False, color='red')
+    plt.show()
+
+    #SIBSP AND PARCH
+    # Create a boxplot
+    titanic_dataset.boxplot(by='Category', column='Values', grid=False)
+    plt.show()
+
 
 if REGRESSION_MODE:
 
-    #Normalise continuous data
-    titanic_dataset['Age']= titanic_dataset['Age']/titanic_dataset['Age'].max()
-    titanic_dataset['Fare']= titanic_dataset['Fare']/titanic_dataset['Fare'].max()
+    #Split age and fare into bins
+    age_bins = [0, 14, 31, 45, float('inf')]
+    titanic_dataset['Age'] = pd.cut(titanic_dataset['Age'], bins=age_bins, right=False)
+
+    fare_bins = [0, 30, 100, float('inf')]
+    titanic_dataset['Fare'] = pd.cut(titanic_dataset['Fare'], bins=fare_bins, right=False)
+
+    titanic_dataset = pd.get_dummies(titanic_dataset, columns=['Age', 'Fare'])
 
     #Create new column for has family based on parch and sibsp
     titanic_dataset['HasFamily']= (titanic_dataset['Parch'] != 0) | (titanic_dataset['SibSp'] != 0)
 
+    #Remove unwanted columns
+    titanic_dataset = titanic_dataset.drop(['PassengerId', 'Parch', 'SibSp'], axis=1)
+
     #Create matrix of features
-    featureMatrix = np.matrix(titanic_dataset.drop(["Survived", 'PassengerId', 'Parch', 'SibSp'], axis=1).values).astype(float)
+    featureMatrix = np.matrix(titanic_dataset.drop(['Survived'], axis=1).values).astype(float)
     #Create vector of actual outcomes
     outputVector = np.matrix(titanic_dataset["Survived"].values).astype(float).T
     #Create training, testing subsets
