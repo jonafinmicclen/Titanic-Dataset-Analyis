@@ -88,4 +88,4 @@ if REGRESSION_MODE:
     #Write predictions from model to excel file and add predictions to the dataframe
     predictions = model.predict(featureMatrix)
     titanic_dataset['Predictions'] = predictions
-    titanic_dataset.to_excel('./predictions.xlsx')
+    titanic_dataset.to_excel('./output/predictions.xlsx')
